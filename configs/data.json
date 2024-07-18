@@ -1,0 +1,26 @@
+{
+  "path": "E:\\ML\\Datasets\\LJSpeech",
+  "format": ".wav",
+  "force_preprocessing": false,
+  "vocab_size": null,
+  "preload_data": false,
+  "preprocessed_text": false,
+  "batch_size": 5,
+  "num_workers": 0,
+  "train_val_split": 0.95,
+  "pre_emphasis": 0.97,
+  "n_mfcc": 13,
+  "sample_rate": 22050,
+  "bucket_feature": "waveform",
+  "mel": {
+    "n_fft": 800,
+    "hop_length": 160,
+    "win_length": 320,
+    "n_mels": 128
+  },
+  "spec": {
+    "n_fft": 1024,
+    "hop_length": 160,
+    "len_spec": 300
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "name": "DiffWave",
+  "architecture": {
+    "global": {
+      "global_cond_dim": 0,
+      "local_cond_dim": 0,
+      "dual": true,
+      "use_wn": true
+    },
+    "mel_upsampler": {
+      "kernel_list": [[3, 20], [3, 32]],
+      "stride_list": [[1, 10], [1, 16]],
+      "upsampler_block":{
+          "input_channels": 1,
+          "output_channels": 1,
+          "dim": 2,
+          "use_wn": false
+      }
+    },
+    "time_embedding": {
+      "max_steps": 50,
+      "embed_dim": 128,
+      "hidden_channels": 512,
+      "output_dimension": 128
+    },
+    "res_model": {
+      "n_layers": 30,
+      "dilation_rate": 2,
+      "dilation_cycle": 10,
+      "output_channels": 64,
+      "layer_config": {
+        "hidden_channels": 64,
+        "kernel_size": 3
+      }
+    }
+  },
+  "optimizers": {
+    "optimizer": "AdamW",
+    "lr": 1e-4,
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "weight_decay": 1e-4,
+    "eps": 1e-8
+  },
+  "training": {
+    "loss_function": "mse",
+    "masking": false
+  },
+  "trainer": {
+    "accumulate_grad_batches": 2
+  },
+  "sampling": {
+    "timesteps_diffusion": 50,
+    "beta_min": 1e-4,
+    "beta_max": 0.05,
+    "fast_sampling_schedule": [0.0001, 0.001, 0.01, 0.05, 0.2, 0.5]
+  }
+}

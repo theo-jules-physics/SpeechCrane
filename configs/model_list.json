@@ -1,0 +1,4 @@
+{
+  "DiffWave": ["models.diffusion.vocoder.diffwave", ["mel", "waveform"]],
+  "HiFiGAN": ["models.gan.vocoder.hifigan", ["mel", "waveform"]]
+}

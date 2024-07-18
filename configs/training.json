@@ -1,0 +1,21 @@
+{
+  "base_path": "D:\\ML\\TTS",
+  "run_id": null,
+  "model_name": "HiFiGAN",
+  "run_name": "Test",
+  "use_wandb": true,
+  "generic": {
+    "device": "cuda",
+    "use_amp": true
+  },
+  "max_time": {
+    "hours": 0,
+    "minutes": 1
+  },
+  "num_steps": null,
+  "trainer_config": {
+    "precision": "16-mixed",
+    "accelerator": "gpu",
+    "log_every_n_steps": 5
+  }
+}
