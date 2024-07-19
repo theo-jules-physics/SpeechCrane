@@ -1,6 +1,7 @@
 {
   "path": "E:\\ML\\Datasets\\LJSpeech",
   "format": ".wav",
+  "sample_rate": 22050,
   "force_preprocessing": false,
   "vocab_size": null,
   "preload_data": false,
@@ -10,7 +11,6 @@
   "train_val_split": 0.95,
   "pre_emphasis": 0.97,
   "n_mfcc": 13,
-  "sample_rate": 22050,
   "bucket_feature": "waveform",
   "mel": {
     "n_fft": 800,

@@ -3,7 +3,7 @@
   "run_id": null,
   "model_name": "HiFiGAN",
   "run_name": "Test",
-  "use_wandb": true,
+  "use_wandb": false,
   "generic": {
     "device": "cuda",
     "use_amp": true
