@@ -224,3 +224,25 @@ class TTSModule(nn.Module):
             NotImplementedError: This method should be implemented by subclasses.
         """
         raise NotImplementedError('Sample config method not implemented for this module.')
+
+    def remove_weight_norm(self):
+        """
+        Remove weight normalization from all modules in the module recursively.
+
+        Note:
+            This function modifies the module in-place.
+        """
+        stack = [self]
+        predefined_types = [nn.Conv1d, nn.ConvTranspose1d, nn.Conv2d, nn.ConvTranspose2d, nn.Linear, nn.Embedding]
+        while stack:
+            children = stack.pop()
+            for name, module in children.named_children():
+                if isinstance(module, tuple(predefined_types)):
+                    try:
+                        torch.nn.utils.parametrize.remove_parametrizations(module, 'weight')
+                        print(f"Weight norm removed from {name}")
+                    except ValueError:
+                        # Catch the error if weight_norm is not applied on this module
+                        pass
+                else:
+                    stack.extend(list(module.children()))
