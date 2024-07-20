@@ -1,16 +1,16 @@
 {
   "base_path": "D:\\ML\\TTS",
   "run_id": null,
-  "model_name": "HiFiGAN",
-  "run_name": "Test",
-  "use_wandb": false,
+  "model_name": "DiffWave",
+  "run_name": "test",
+  "use_wandb": true,
   "generic": {
     "device": "cuda",
     "use_amp": true
   },
   "max_time": {
-    "hours": 9,
-    "minutes": 0
+    "hours": 0,
+    "minutes": 1
   },
   "num_steps": null,
   "trainer_config": {

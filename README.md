@@ -303,9 +303,9 @@ SpeechCrane builds upon the work of numerous Text-to-Speech (TTS) models and pap
 * [A review of deep learning techniques for speech processing](https://arxiv.org/abs/2305.00359) | 2023 | Ambuj Mehrish, Navonil Majumder, Rishabh Bhardwaj, Rada Mihalcea, Soujanya Poria
 
 #### Other TTS projects
-*[tortoise-tts](https://github.com/neonbjb/tortoise-tts)
-*[coqui-tts](https://github.com/coqui-ai/TTS)
-*[MeloTTS](https://github.com/myshell-ai/MeloTTS)
+* [tortoise-tts](https://github.com/neonbjb/tortoise-tts)
+* [coqui-tts](https://github.com/coqui-ai/TTS)
+* [MeloTTS](https://github.com/myshell-ai/MeloTTS)
 
 I am grateful to the authors of these works for their contributions to the field of speech synthesis.
 
