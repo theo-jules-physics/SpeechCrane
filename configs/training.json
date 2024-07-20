@@ -3,7 +3,7 @@
   "run_id": null,
   "model_name": "DiffWave",
   "run_name": "test",
-  "use_wandb": true,
+  "use_wandb": false,
   "generic": {
     "device": "cuda",
     "use_amp": true

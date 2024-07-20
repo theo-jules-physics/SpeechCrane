@@ -42,9 +42,10 @@ def check_preprocessing(features: list[str], data_config: dict) -> dict:
         if feature not in feature_preprocessed or force_preprocessing:
             feature_processors[feature] = FeatureProcessorFactory.get_processor(feature)
 
-    if len(feature_processors) < 0:
+    if len(feature_processors) == 0:
         print("All features are already preprocessed.")
     else:
+        print('Features to preprocess:', list(feature_processors.keys()))
         print('Preprocessing data...')
         preprocessor = DatasetPreprocessor(dataset_folder, feature_processors, format)
         preprocessor.preprocess_data()

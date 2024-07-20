@@ -7,7 +7,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 import importlib
 from utils.dataset import TTSDataModule
-from utils.training import wandb_init, create_callbacks
+from utils.training import create_callbacks
 from utils.preprocessing import check_preprocessing
 from datetime import datetime
 
