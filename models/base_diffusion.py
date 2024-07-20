@@ -1,4 +1,6 @@
 import torch
+import os
+import yaml
 import torch.nn.functional as F
 from pytorch_lightning import LightningModule
 from utils.modules import remove_weight_norm_recursively
@@ -278,6 +280,15 @@ class BaseDiff(LightningModule):
         """
         remove_weight_norm_recursively(self)
 
+    def save_config(self, file_dir: str) -> None:
+        """
+        Save model configuration to a YAML file.
 
-if __name__ == '__main__':
-    None
+        Args:
+            file_dir: Directory to save the config file.
+        """
+        hparam_dict = dict(self.hparams)
+        os.makedirs(file_dir, exist_ok=True)
+        file_name = os.path.join(file_dir, 'config.yaml')
+        with open(file_name, 'w') as file:
+            yaml.dump(hparam_dict, file)

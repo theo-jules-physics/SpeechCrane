@@ -62,6 +62,7 @@
     "device": "cuda",
     "use_amp": true,
     "gan_loss": "lsgan",
+    "grad_accumulate_steps": 3,
     "lambda_fmap": 10
   }
 }

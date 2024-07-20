@@ -96,9 +96,10 @@ The generated audio will be saved as `gen_audio/output.wav`.
 
 ## Roadmap
 
+SpeechCrane is an ongoing project, and I plan to implement additional features and models in the future. Below is a list of short-term, medium-term, and long-term goals for the project:
+
 ### Short-term Goals
 * Implement output masking for HiFiGAN training
-* Resolve preprocessing issues
 * Verify gradient accumulation functionality
 * Add quick training tests
 * Complete documentation
@@ -122,6 +123,10 @@ The generated audio will be saved as `gen_audio/output.wav`.
 * Optimize models and training processes
 * Develop a user-friendly GUI
 * Implement Voice Conversion and Speaker Adaptation
+
+Note that I first work on a private version of the project before public release. 
+Multiple architecture, notably containing acousting models (Complete HiFiGAN, VITS, VITS2, HierSpeech2, FastSpeech 2, GlowTTS, etc.) have been somewhat implemented. 
+Still, I need to transform them to a standard fitting the SpeechCrane architecture and test them thouroughly before release.
 
 ## Contributing
 

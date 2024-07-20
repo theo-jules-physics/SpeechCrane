@@ -1,6 +1,7 @@
 from utils.loss_functions import gloss, dloss, fmap_loss
-from utils.modules import remove_weight_norm_recursively
 import torch
+import os
+import yaml
 from torch import nn
 import pytorch_lightning as pl
 import itertools
@@ -68,6 +69,19 @@ class BaseGAN(pl.LightningModule):
         """
         self.list_gen = nn.ModuleList()
         self.list_disc = nn.ModuleList()
+
+    def save_config(self, file_dir: str) -> None:
+        """
+        Save model configuration to a YAML file.
+
+        Args:
+            file_dir: Directory to save the config file.
+        """
+        hparam_dict = dict(self.hparams)
+        os.makedirs(file_dir, exist_ok=True)
+        file_name = os.path.join(file_dir, 'config.yaml')
+        with open(file_name, 'w') as file:
+            yaml.dump(hparam_dict, file)
 
     def get_disc_outs(self, gen_output: torch.Tensor, true_output: torch.Tensor) -> dict:
         """
@@ -258,9 +272,3 @@ class BaseGAN(pl.LightningModule):
             Inference result.
         """
         raise NotImplementedError
-
-    def remove_weight_norm(self) -> None:
-        """
-        Removes weight normalization from all modules in the model.
-        """
-        remove_weight_norm_recursively(self)
