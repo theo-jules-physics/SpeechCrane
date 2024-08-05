@@ -6,6 +6,7 @@ from utils.preprocessing import DBMelSpectrogram
 from utils.general import get_mask
 from torch import nn
 import torch
+import torchaudio.functional as audioF
 
 
 class HiFiGAN(BaseGAN):
@@ -41,11 +42,12 @@ class HiFiGAN(BaseGAN):
     def _val_loss(self, gen_output, true_output):
         return self._main_loss(gen_output, true_output)['mel_loss']
 
-    @staticmethod
-    def _preprocess_batch(batch):
+    def _preprocess_batch(self, batch):
         preprocessed_dict = {}
         for key, value in batch.items():
-            if key in ['waveform', 'text']:
+            if key == 'waveform':
+                preprocessed_dict[key] = audioF.preemphasis(value)
+            if key == 'text':
                 preprocessed_dict[key] = value
             else:
                 preprocessed_dict[key] = value.to(torch.float32)
@@ -58,5 +60,5 @@ class HiFiGAN(BaseGAN):
         output_dict['gen_out'] = self.list_gen['decoder'](preprocessed_batch['mel'])
         return output_dict
 
-    def inference(self, mel):
+    def inference(self, mel, **kwargs):
         return self.list_gen['decoder'](mel)

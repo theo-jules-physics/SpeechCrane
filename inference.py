@@ -29,7 +29,9 @@ class VocoderInference:
 
     @torch.no_grad()
     def inference(self, mel):
-        return self.model.inference(mel)[0].cpu()
+        preemph_wave = self.model.inference(mel)[0].cpu()
+        final_wave = torchaudio.functional.deemphasis(preemph_wave)
+        return final_wave
 
     def generate_audio(self, mel_path):
         print(f'Generating audio from mel spectrogram: {mel_path}')

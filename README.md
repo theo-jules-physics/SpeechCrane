@@ -66,6 +66,8 @@ SpeechCrane requires a specific dataset format:
 dataset_folder/audio/speaker_id/audio_file
 ```
 
+4. All the waveforms must be normalized to the range [-1, 1].
+
 ### Configuration
 
 The system uses JSON configuration files located in the configs/ directory:

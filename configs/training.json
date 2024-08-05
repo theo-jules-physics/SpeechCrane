@@ -2,15 +2,15 @@
   "base_path": "D:\\ML\\TTS",
   "run_id": null,
   "model_name": "DiffWave",
-  "run_name": "test",
-  "use_wandb": false,
+  "run_name": "diffwave_ljspeech",
+  "use_wandb": true,
   "generic": {
     "device": "cuda",
     "use_amp": true
   },
   "max_time": {
-    "hours": 0,
-    "minutes": 1
+    "hours": 60,
+    "minutes": 0
   },
   "num_steps": null,
   "trainer_config": {

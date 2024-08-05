@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+import torchaudio.functional as audioF
 from modules.upsampler import MelUpsampler
 from modules.diffusion import DiffusionEmbedding
 from modules.resnet import WaveNetLayer, GenericResBlock
@@ -47,7 +48,8 @@ class DiffWave(BaseDiff):
         return x
 
     def _preprocess_batch(self, batch):
-        preprocessed_dict = {'input': batch['waveform'].to(self.device)}
+        pre_emph_wave = audioF.preemphasis(batch['waveform'])
+        preprocessed_dict = {'input': pre_emph_wave.to(self.device)}
         if self.training_config['masking']:
             preprocessed_dict['mask'] = get_mask(batch['waveform_length']).to(self.device).unsqueeze(1)
         else:
