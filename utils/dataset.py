@@ -537,17 +537,3 @@ class TTSDataModule(pl.LightningDataModule):
         num_workers = self.data_config['num_workers']
         return DataLoader(self.dataset, batch_sampler=val_sampler, num_workers=num_workers,
                           collate_fn=self._collate_batch)
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    import matplotlib
-    matplotlib.use('TkAgg')
-
-    test_waveform = torch.randn(10, 1, 16000)
-    pre_emph_waveform = pre_emphasis(test_waveform)
-
-    de_emph_waveform = reverse_pre_emphasis(pre_emph_waveform)
-    diff = test_waveform - de_emph_waveform
-    fig = plt.figure()
-    plt.plot(diff[9, 0, :].squeeze().numpy())
