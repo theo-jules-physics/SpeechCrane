@@ -1,6 +1,8 @@
 import json
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
+from utils.callbacks import AudioLoggingCallback
+import os
 
 
 def get_config() -> tuple[dict, dict, dict, str, dict]:
@@ -20,28 +22,51 @@ def get_config() -> tuple[dict, dict, dict, str, dict]:
     return training_config, trainer_config, data_config, name_net, model_config
 
 
-def create_callbacks(file_dir, monitor='val_loss'):
+def set_callbacks(run_dir, callback_config):
     """
-    Create a ModelCheckpoint callback for saving model checkpoints.
+    Set up and configure callbacks for the training process.
+
+    This function creates a list of callbacks based on the provided configuration.
+    It always includes a ModelCheckpoint callback and optionally adds an
+    AudioLoggingCallback if enabled in the configuration.
 
     Args:
-        file_dir: Directory to save checkpoints.
-        monitor: Quantity to monitor. Defaults to 'val_loss'.
+        run_dir (str): The directory path where the run data will be saved.
+        callback_config (dict): A dictionary containing configuration for the callbacks.
+            Expected to have 'model_checkpoint' and 'audio_logging' keys.
 
     Returns:
-        Checkpoint callback object configured to save the best models.
+        list: A list of configured callback objects.
 
-    Example:
-        >>> callback = create_callbacks('/path/to/checkpoints', monitor='accuracy')
-        >>> print(callback.dirpath)
-        '/path/to/checkpoints'
+    The function does the following:
+    1. Creates a ModelCheckpoint callback with the configuration provided in
+       callback_config['model_checkpoint'], saving checkpoints in a 'checkpoints'
+       subdirectory of run_dir.
+    2. If audio logging is enabled (callback_config['audio_logging']['enable'] is True),
+       it creates an AudioLoggingCallback with the provided configuration.
+
+    Example callback_config structure:
+    {
+        'model_checkpoint': {
+            'save_top_k': 3,
+            'monitor': 'val_loss',
+            ...
+        },
+        'audio_logging': {
+            'enable': True,
+            'log_every_n_steps': 1000,
+            ...
+        }
+    }
     """
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=file_dir,  # path to save checkpoints
-        verbose=True,
-        monitor=monitor,
-        mode="min",
-        save_top_k=3,  # save the top 1 models
-        save_last=True
-    )
-    return checkpoint_callback
+    callback_list = []
+
+    checkpoint_dir = os.path.join(run_dir, 'checkpoints')
+    checkpoint_callback = ModelCheckpoint(**callback_config['model_checkpoint'], dirpath=checkpoint_dir)
+    callback_list.append(checkpoint_callback)
+
+    if callback_config['audio_logging']['enable']:
+        audio_log_callback = AudioLoggingCallback(run_dir, callback_config['audio_logging'])
+        callback_list.append(audio_log_callback)
+
+    return callback_list

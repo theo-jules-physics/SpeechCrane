@@ -2,12 +2,11 @@ import os
 import wandb
 import torch
 import json
-import yaml
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 import importlib
 from utils.dataset import TTSDataModule
-from utils.training import create_callbacks, get_config
+from utils.training import get_config, set_callbacks
 from utils.preprocessing import check_preprocessing
 from datetime import datetime
 
@@ -45,6 +44,7 @@ def run() -> None:
         wandb_logger.watch(model, log='all')
         loggers.append(wandb_logger)
         file_dir = wandb.run.dir
+        run_dir = os.path.dirname(file_dir)
     else:
         random_id = wandb.util.generate_id()
         formated_time = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -52,11 +52,11 @@ def run() -> None:
         file_dir = os.path.join(run_dir, 'files')
         model.save_config(file_dir)
 
-    # Configure the dataset and trainer
-    callbacks.append(create_callbacks(file_dir))
+    callbacks_list = set_callbacks(run_dir, training_config['callbacks'])
+
     data_module = TTSDataModule(model.data_config, [], features, training_path=file_dir)
     trainer_config.update({'logger': loggers,
-                           'callbacks': callbacks,
+                           'callbacks': callbacks_list,
                            'default_root_dir': file_dir,
                            'max_time': training_config['max_time']})
 

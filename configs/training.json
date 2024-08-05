@@ -17,5 +17,21 @@
     "precision": "16-mixed",
     "accelerator": "gpu",
     "log_every_n_steps": 5
+  },
+  "callbacks": {
+    "model_checkpoint": {
+      "verbose": true,
+      "save_top_k": 3,
+      "monitor": "val_loss",
+      "mode": "min",
+      "save_last": true
+    },
+    "audio_logging": {
+      "enable": true,
+      "log_audio_freq": 1,
+      "log_folder_name": "audio",
+      "save_waveform": true,
+      "num_samples": 1
+    }
   }
 }
