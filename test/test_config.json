@@ -1,0 +1,31 @@
+{
+  "model_name": "DiffWave",
+  "data_size": 1000,
+  "batch_size": 5,
+  "generic": {
+    "device": "cuda",
+    "use_amp": true
+  },
+  "trainer_config": {
+    "precision": "16-mixed",
+    "accelerator": "gpu",
+    "log_every_n_steps": 5,
+    "fast_dev_run": 3
+  },
+  "feature_config": {
+    "waveform": {
+      "shape": [
+        1,
+        16000
+      ],
+      "dtype": "float32"
+    },
+    "mel": {
+      "shape": [
+        128,
+        100
+      ],
+      "dtype": "float32"
+    }
+  }
+}

@@ -10,17 +10,5 @@
   "num_workers": 0,
   "train_val_split": 0.95,
   "pre_emphasis": 0.97,
-  "n_mfcc": 13,
-  "bucket_feature": "waveform",
-  "mel": {
-    "n_fft": 800,
-    "hop_length": 160,
-    "win_length": 320,
-    "n_mels": 128
-  },
-  "spec": {
-    "n_fft": 1024,
-    "hop_length": 160,
-    "len_spec": 300
-  }
+  "bucket_feature": "waveform"
 }

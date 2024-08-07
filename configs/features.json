@@ -1,0 +1,8 @@
+{
+  "mel": {
+    "n_fft": 800,
+    "hop_length": 160,
+    "win_length": 320,
+    "n_mels": 128
+  }
+}

@@ -18,29 +18,74 @@ def correct_waveform(batch_waveform: torch.Tensor, max_len_waveform: int | None 
     Corrects the waveform to ensure uniform length by either truncating or padding.
 
     Args:
-        batch_waveform: Batch of waveforms of shape (batch_size, time).
+        batch_waveform: Batch of waveforms of shape (batch_size, channels, time).
         max_len_waveform: Maximum length for the waveforms. If None,
                           no length correction is applied.
 
     Returns:
-        Corrected waveform with an added channel dimension,
+        Corrected waveform,
         shape (batch_size, 1, time).
 
     Example:
-        >>> waveform = torch.randn(32, 16000)  # 32 samples of 1-second audio at 16kHz
+        >>> waveform = torch.randn(32, 1, 16000)  # 32 samples of 1-second audio at 16kHz
         >>> corrected = correct_waveform(waveform, 20000)
         >>> print(corrected.shape)
         torch.Size([32, 1, 20000])
     """
-    if max_len_waveform is None:
-        return batch_waveform.unsqueeze(1)
 
-    len_wave = batch_waveform.size(1)
+    if len(batch_waveform.shape) == 2:
+        batch_waveform = batch_waveform.unsqueeze(1)
+
+    if max_len_waveform is None:
+        return batch_waveform
+
+    len_wave = batch_waveform.size(-1)
     if len_wave > max_len_waveform:
-        batch_waveform = batch_waveform[:, :max_len_waveform]
+        batch_waveform = batch_waveform[:, :, :max_len_waveform]
     else:
         batch_waveform = F.pad(batch_waveform, (0, max_len_waveform - len_wave))
-    return batch_waveform.unsqueeze(1)
+
+    print(len_wave)
+    print(max_len_waveform)
+    print(batch_waveform.size())
+    return batch_waveform
+
+
+def collate_batch(batch: list[dict], feature_list: list, feature_config: dict) -> dict[str, torch.Tensor]:
+    """
+    Collate a batch of samples into padded tensors.
+
+    Args:
+        batch: List of samples.
+
+    Returns:
+        Dictionary of padded feature tensors and lengths.
+    """
+    batch_flist = list(batch[0].keys())
+    batch_dict = {feature: [] for feature in batch_flist}
+    if 'text' in batch_dict:
+        batch_dict['text'] = [sample['text'] for sample in batch]
+    max_len_feat = None
+
+    for sample in batch:
+        for feature in feature_list:
+            batch_dict[feature].append(sample[feature])
+            batch_dict[f'{feature}_length'].append(sample[f'{feature}_length'])
+
+    for feature in feature_list:
+        batch_dict[feature] = pad_sequence(batch_dict[feature], batch_first=True)
+        batch_dict[f'{feature}_length'] = torch.tensor(batch_dict[f'{feature}_length'], dtype=torch.long)
+
+    if 'mel' in batch_dict:
+        print(batch_dict['mel'].size())
+        hop_length = feature_config['mel']['hop_length']
+        max_len_mel = batch_dict['mel'].size(-1)
+        max_len_wave = max_len_mel * hop_length
+
+    if 'waveform' in batch_dict:
+        batch_dict['waveform'] = correct_waveform(batch_dict['waveform'], max_len_wave)
+
+    return batch_dict
 
 
 class BucketSampler(torch.utils.data.Sampler):
@@ -415,7 +460,7 @@ class TTSDataModule(pl.LightningDataModule):
     DataLoaders for a text-to-speech (TTS) dataset. Handles data partitioning,
     feature collation, and provides interfaces to the training and validation data.
     """
-    def __init__(self, data_config: dict, h5_features: list[str], npy_features: list[str],
+    def __init__(self, data_config: dict, feature_config: dict, h5_features: list[str], npy_features: list[str],
                  training_path: str | None = None):
         """
         Initialize the TTSDataModule.
@@ -428,6 +473,7 @@ class TTSDataModule(pl.LightningDataModule):
         """
         super().__init__()
         self.data_config = data_config
+        self.feature_config = feature_config
         self.mel_config = data_config['mel']
         self.spec_config = data_config['spec']
         self.h5_features = h5_features
@@ -447,35 +493,7 @@ class TTSDataModule(pl.LightningDataModule):
         Returns:
             Dictionary of padded feature tensors and lengths.
         """
-        batch_flist = list(batch[0].keys())
-        batch_dict = {feature: [] for feature in batch_flist}
-        if 'text' in batch_dict:
-            batch_dict['text'] = [sample['text'] for sample in batch]
-        feature_list = self.h5_features + self.npy_features
-        max_len_feat = None
-
-        for sample in batch:
-            for feature in feature_list:
-                batch_dict[feature].append(sample[feature])
-                batch_dict[f'{feature}_length'].append(sample[f'{feature}_length'])
-
-        for feature in feature_list:
-            batch_dict[feature] = pad_sequence(batch_dict[feature], batch_first=True)
-            batch_dict[f'{feature}_length'] = torch.tensor(batch_dict[f'{feature}_length'], dtype=torch.long)
-
-        for feat in ['spec', 'mel']:
-            if feat in batch_dict:
-                batch_dict[feat] = batch_dict[feat].mT
-                max_len_feat = batch_dict[feat].size(-1)
-                max_len_wave = max_len_feat * self.data_config[feat]['hop_length']
-
-        if 'weo' in batch_dict:
-            batch_dict['weo'] = batch_dict['weo'].mT
-
-        if 'waveform' in batch_dict:
-            batch_dict['waveform'] = correct_waveform(batch_dict['waveform'], max_len_wave)
-
-        return batch_dict
+        return collate_batch(batch, self.h5_features + self.npy_features, self.feature_config)
 
     def _partition_dataset(self, training_path: str | None) -> None:
         """
