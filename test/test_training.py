@@ -6,7 +6,17 @@ import json
 import importlib
 
 
-def mask_data(data, data_length):
+def mask_data(data: torch.Tensor, data_length: int) -> torch.Tensor:
+    """
+    Apply a mask to the data based on the specified length.
+
+    Args:
+        data (torch.Tensor): The input data to be masked.
+        data_length (int): The length up to which the data should be kept.
+
+    Returns:
+        torch.Tensor: The masked data.
+    """
     max_len = data.shape[-1]
     mask = torch.zeros(max_len)
     mask[:data_length] = 1
@@ -14,22 +24,51 @@ def mask_data(data, data_length):
 
 
 class DummyDataset(Dataset):
-    def __init__(self, num_sample, feature_list, feature_config):
+    """
+    A dataset that generates dummy data for TTS model testing.
+
+    Args:
+        num_sample (int): The number of samples in the dataset.
+        feature_list (list): List of feature names to generate.
+        feature_config (dict): Configuration for each feature.
+    """
+    def __init__(self, num_sample: int, feature_list: list[str], feature_config: dict):
         self.num_sample = num_sample
         self.feature_list = feature_list
         self.feature_config = feature_config
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.num_sample
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor]:
+        """
+        Generate a dummy item with all required features.
+
+        Args:
+            idx (int): Index of the item to generate.
+
+        Returns:
+            dict: A dictionary containing the generated features.
+        """
         dummy_item = {}
         for feature in self.feature_list:
             gen_data = self._generate_dummy_feature(feature)
             dummy_item.update(gen_data)
         return dummy_item
 
-    def _generate_dummy_feature(self, feature_name):
+    def _generate_dummy_feature(self, feature_name: str) -> dict[str, torch.Tensor]:
+        """
+        Generate dummy data for a specific feature.
+
+        Args:
+            feature_name (str): Name of the feature to generate.
+
+        Returns:
+            dict: A dictionary containing the generated feature and its length.
+
+        Raises:
+            ValueError: If an unsupported dtype is specified in the feature config.
+        """
         feature_characs = self.feature_config[feature_name]
         shape = feature_characs['shape']
         dtype = feature_characs['dtype']
@@ -55,7 +94,15 @@ class DummyDataset(Dataset):
 
 
 class DummyDataModule(pl.LightningDataModule):
-    def __init__(self, test_config, feature_config, feature_list):
+    """
+    A PyTorch Lightning DataModule that uses the DummyDataset for training and validation.
+
+    Args:
+        test_config (dict): Configuration for the test run.
+        feature_config (dict): Configuration for each feature.
+        feature_list (list): List of feature names to generate.
+    """
+    def __init__(self, test_config: dict, feature_config: dict, feature_list: list[str]):
         super().__init__()
         self.test_config = test_config
         self.feature_config = feature_config
@@ -66,20 +113,32 @@ class DummyDataModule(pl.LightningDataModule):
         Collate a batch of samples into padded tensors.
 
         Args:
-            batch: List of samples.
+            batch (list[dict]): List of samples.
 
         Returns:
-            Dictionary of padded feature tensors and lengths.
+            dict[str, torch.Tensor]: Dictionary of padded feature tensors and lengths.
         """
         return collate_batch(batch, self.feature_list, self.feature_config)
 
     def train_dataloader(self) -> DataLoader:
+        """
+        Create and return a DataLoader for the training data.
+
+        Returns:
+            DataLoader: The training data loader.
+        """
         dataset = DummyDataset(self.test_config['data_size'],
                                self.feature_list,
                                self.test_config['feature_config'])
         return DataLoader(dataset, batch_size=self.test_config['batch_size'], collate_fn=self._collate_batch)
 
-    def val_dataloader(self):
+    def val_dataloader(self) -> DataLoader:
+        """
+        Create and return a DataLoader for the validation data.
+
+        Returns:
+            DataLoader: The validation data loader.
+        """
         dataset = DummyDataset(self.test_config['data_size'] // 10,
                                self.feature_list,
                                self.test_config['feature_config'])
@@ -87,6 +146,15 @@ class DummyDataModule(pl.LightningDataModule):
 
 
 def run() -> None:
+    """
+    Main function to run the training process with dummy data.
+
+    This function performs the following steps:
+    1. Load configurations from JSON files
+    2. Initialize the model
+    3. Set up the DummyDataModule
+    4. Configure and start the PyTorch Lightning Trainer
+    """
     test_config = json.load(open('test/test_config.json', 'r'))
     features_config = json.load(open('configs/features.json', 'r'))
     trainer_config = test_config['trainer_config']
@@ -103,5 +171,6 @@ def run() -> None:
     model = model_class(model_config, test_config, device)
 
     data_module = DummyDataModule(test_config, features_config, feature_list)
+
     trainer = pl.Trainer(**trainer_config)
     trainer.fit(model, data_module)
