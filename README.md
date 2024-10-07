@@ -101,15 +101,12 @@ The generated audio will be saved as `gen_audio/output.wav`.
 SpeechCrane is an ongoing project, and I plan to implement additional features and models in the future. Below is a list of short-term, medium-term, and long-term goals for the project:
 
 ### Short-term Goals
-* Implement output masking for HiFiGAN training
-* Verify gradient accumulation functionality
-* Add quick training tests
 * Complete documentation
 * Train and release example HiFiGAN and DiffWave models
+* 
 
 ### Medium-term Goals
 * Verify weight normalization implementation
-* Add pre-emphasis and de-emphasis for audio waveforms
 * Develop a training profiler
 * Optimize preprocessed data storage
 * Enhance non-WandB logging and checkpointing

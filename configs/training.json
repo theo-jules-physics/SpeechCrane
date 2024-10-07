@@ -1,16 +1,16 @@
 {
   "base_path": "D:\\ML\\TTS",
   "run_id": null,
-  "model_name": "DiffWave",
-  "run_name": "diffwave_ljspeech",
+  "model_name": "HiFiGAN",
+  "run_name": "hifigan_test",
   "use_wandb": true,
   "generic": {
     "device": "cuda",
     "use_amp": true
   },
   "max_time": {
-    "hours": 60,
-    "minutes": 0
+    "hours": 0,
+    "minutes": 5
   },
   "num_steps": null,
   "trainer_config": {

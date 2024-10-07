@@ -12,6 +12,7 @@ def get_config() -> tuple[dict, dict, dict, str, dict]:
     Returns:
         Tuple containing training config, trainer config, data config, model name, and model config.
     """
+    config_dict = dict()
     training_config = json.load(open('configs/training.json', 'r'))
     trainer_config = training_config['trainer_config']
     data_config = json.load(open('configs/data.json', 'r'))

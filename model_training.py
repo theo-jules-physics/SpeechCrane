@@ -7,7 +7,7 @@ from pytorch_lightning.loggers import WandbLogger
 import importlib
 from utils.dataset import TTSDataModule
 from utils.training import get_config, set_callbacks
-from utils.preprocessing import check_preprocessing
+from utils.preprocessing import preprocess_data
 from datetime import datetime
 
 
@@ -18,7 +18,7 @@ def run() -> None:
     # Load configuration files and corresponding model
     training_config, trainer_config, data_config, name_net, model_config = get_config()
     module_path, features = json.load(open(f'configs/model_list.json', 'r'))[name_net]
-    data_config = check_preprocessing(features, data_config)
+    data_config = preprocess_data(data_config)
     model_module = importlib.import_module(module_path)
     model_class = getattr(model_module, name_net)
     model_dir = os.path.join(training_config['base_path'], name_net, 'models')
