@@ -1,5 +1,6 @@
 {
   "name": "HiFiGAN",
+  "features": ["mel", "waveform"],
   "architecture": {
     "global": {
       "dual": true,

@@ -12,13 +12,13 @@ def get_config() -> tuple[dict, dict, dict, str, dict]:
     Returns:
         Tuple containing training config, trainer config, data config, model name, and model config.
     """
-    config_dict = dict()
     training_config = json.load(open('configs/training.json', 'r'))
     trainer_config = training_config['trainer_config']
     data_config = json.load(open('configs/data.json', 'r'))
     name_net = training_config['model_name']
     model_config = json.load(open(f'configs/{name_net}.json', 'r'))
     model_config['training'].update(training_config['generic'])
+    data_config['features'] = model_config['features']
     trainer_config.update(model_config.get('trainer', {}))
     return training_config, trainer_config, data_config, name_net, model_config
 

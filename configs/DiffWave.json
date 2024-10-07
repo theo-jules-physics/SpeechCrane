@@ -1,5 +1,6 @@
 {
   "name": "DiffWave",
+  "features": ["mel", "waveform"],
   "architecture": {
     "global": {
       "global_cond_dim": 0,
